@@ -1,0 +1,47 @@
+# AGENTS.md
+
+Compact notes for agents working in this repo. Verify against config/scripts before trusting prose (including `README.md`).
+
+## Commands
+
+```bash
+npm install
+npm run dev     # Next dev server (Turbopack), http://localhost:3000
+npm run lint    # eslint (flat config, repo root, no args)
+npm run build   # next build — production verification
+npm run start
+```
+
+- There is **no test, typecheck, formatter, or codegen script**. Verification order: `npm run lint` → `npm run build`.
+- `next build` compiles cleanly only because `jsconfig.json` defines the path alias below; don't delete it.
+- **Lint is strict**: `eslint-config-next/core-web-vitals` includes React Compiler rules that fail the build on (a) impure calls like `Math.random()` during render — use index-derived deterministic values or module-level constants; (b) synchronous `setState` inside `useEffect` — read external stores with `useSyncExternalStore` instead. `next build` does *not* run ESLint; only `npm run lint` does.
+
+## Architecture
+
+- Next.js 16 **App Router**, plain **JavaScript** (no TypeScript), React 19, Tailwind CSS **v4**, Framer Motion, Lucide.
+- Two routes: `/` (gated home) and `/welcome` (secret-answer login). `src/app/page.js` wraps all home content in the client `Gate` component, which redirects to `/welcome` unless the security question was answered during the current page load, and shows `BirthdayPopup` once inside. Never render home content outside `Gate` — it must not leak before the check.
+- **Auth is memory-only by design.** `src/lib/auth.js` holds a module-level `granted` flag and never touches storage, so every refresh/new tab locks the site again and re-asks the question. Do not "fix" this by adding localStorage/sessionStorage persistence.
+- **All personalization lives in `src/data/siteConfig.js`**: the gate question/answers, birthday name/wishes, and the popup's date window (`birthday.window`, currently Nov 8–9) plus `birthday.forceShow` to preview outside it. `src/lib/auth.js` / `src/lib/birthday.js` hold matching and date-window helpers — call `isBirthdayWindow()` from effects only, never during render (`new Date()` is impure per the lint rules).
+- The gate is a romantic gesture, **not real security** — it's client-side only (anyone can view source or read the answer in the bundle). Do not add auth infrastructure unless asked.
+- Remaining pages: `src/app/page.js` composes client components from `src/components/` (every component starts with `"use client"`; `layout.js` and `welcome/page.js` are the only server files — the latter exists to export `metadata`).
+- `@/*` maps to `./src/*` via `jsconfig.json` `paths`. All cross-directory imports use it (`@/components/...`, `@/data/memories`); keep using it for new imports.
+- Timeline + gallery content lives in `src/data/memories.js`. Other copy is hardcoded inside components (`LoveLetter.jsx`, `Surprise.jsx`, `Footer.jsx`).
+- Tailwind v4 is CSS-first: `postcss.config.mjs` loads `@tailwindcss/postcss`, `globals.css` has `@import "tailwindcss"` and **no `tailwind.config.*` file exists**. Custom classes (`.font-romantic`, `.floating`, keyframes) are plain CSS in `globals.css` — add new theme/utilities there, not in a JS config.
+- `next.config.mjs` is empty. Using `next/image` with remote URLs requires adding `images.remotePatterns` first; local assets are expected.
+
+## Gotchas
+
+- **README personalization steps are stale about filenames.** Code references `/images/hero.svg` (in `Hero.jsx`) and `/images/memory-1..4.svg` (in `src/data/memories.js`), not `.jpg`. Dropping in a photo means updating those `src` paths too.
+- **Music is intentionally missing.** `MusicPlayer.jsx` loads `/music/our-song.mp3`, which doesn't exist (placeholder: `public/music/ADD_YOUR_SONG_HERE.txt`). The button shows "Add your song" until the file is added; do not treat the 404 as a bug.
+- No database, auth, or env vars; `.env*` is gitignored and unused.
+- ESLint ignores `.next/`, `out/`, `build/`, `next-env.d.ts` (see `eslint.config.mjs`).
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+## This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
