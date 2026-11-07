@@ -31,8 +31,7 @@ npm run start
 
 ## Gotchas
 
-- **README personalization steps are stale about filenames.** Code references `/images/hero.svg` (in `Hero.jsx`) and `/images/memory-1..4.svg` (in `src/data/memories.js`), not `.jpg`. Dropping in a photo means updating those `src` paths too.
-- **Music is intentionally missing.** `MusicPlayer.jsx` loads `/music/our-song.mp3`, which doesn't exist (placeholder: `public/music/ADD_YOUR_SONG_HERE.txt`). The button shows "Add your song" until the file is added; do not treat the 404 as a bug.
+- **Photos and music are the user's personal files.** `public/images/` holds `memory_1.jpeg` / `memory_2.jpeg` / `memory_3.jpg` / `memory_4.jpg` (referenced from `src/data/memories.js` and `src/components/Hero.jsx`) plus unused `*.svg` starter artwork; `public/music/our_music.mp3` (~10 MB) is wired into `MusicPlayer.jsx`. The `ADD_YOUR_SONG_HERE.txt` note and the `*.svg` files are leftovers — no code references them. Changing a filename means updating the `src` path too.
 - No database, auth, or env vars; `.env*` is gitignored and unused.
 - ESLint ignores `.next/`, `out/`, `build/`, `next-env.d.ts` (see `eslint.config.mjs`).
 
