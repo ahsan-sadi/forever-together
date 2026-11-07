@@ -36,3 +36,4 @@ npm run start
 - Audio playback requires a user click because browsers generally block autoplay with sound.
 - Use personal photos only when you have permission to publish them.
 - This starter has no database or authentication; all content is currently local.
+# forever-us
