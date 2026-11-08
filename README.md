@@ -62,3 +62,4 @@ Notes:
 - Audio playback requires a user click because browsers generally block autoplay with sound.
 - Use personal photos only when you have permission to publish them.
 - This starter has no database or authentication; content is static and served from `public/`.
+# sadi-moitry-forever
