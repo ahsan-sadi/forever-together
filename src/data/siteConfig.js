@@ -16,7 +16,7 @@ export const loveNote = {
   paragraphs: [
     "I still remember the first time we met — like the world quietly paused so I could notice you. One ordinary moment, and somehow everything after it became ours.",
     "From that first hello, a whole love began to grow: in the conversations that never wanted to end, in the laughter we kept saving for each other, and in the small silences that never felt empty.",
-    "Meeting you was the beginning I never knew I was waiting for. You turned a random day into my favorite memory, and a simple hello into forever.",
+    "Meeting you was the beginning I never knew I was waiting for. You turned everything into my favorite memory, and a simple hello into forever.",
   ],
   signature: "Forever yours, from that very first day ❤️",
 };
