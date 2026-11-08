@@ -64,3 +64,4 @@ Notes:
 - This starter has no database or authentication; content is static and served from `public/`.
 # sadi-moitry-forever
 # sadi-moitry-forever
+# forever-together
