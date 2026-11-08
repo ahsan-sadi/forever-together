@@ -23,15 +23,15 @@ npm run start
 - **Auth is memory-only by design.** `src/lib/auth.js` holds a module-level `granted` flag and never touches storage, so every refresh/new tab locks the site again and re-asks the question. Do not "fix" this by adding localStorage/sessionStorage persistence.
 - **All personalization lives in `src/data/siteConfig.js`**: the gate question/answers and the opening love-note copy (`loveNote`: headline/title/paragraphs/signature about the first meeting). `src/lib/auth.js` holds the matching helper; `Gate` shows `LoveNote` once inside — it opens unconditionally ~600 ms after entry (no date window).
 - The gate is a romantic gesture, **not real security** — it's client-side only (anyone can view source or read the answer in the bundle). Do not add auth infrastructure unless asked.
-- Remaining pages: `src/app/page.js` composes client components from `src/components/` (every component starts with `"use client"`; `layout.js` and `welcome/page.js` are the only server files — the latter exists to export `metadata`).
+- Remaining pages: `src/app/page.js` composes components from `src/components/` (all client components start with `"use client"`; the exceptions are `Footer.jsx`, `layout.js`, and `welcome/page.js` — pure static JSX / server files, the last existing to export `metadata`).
 - `@/*` maps to `./src/*` via `jsconfig.json` `paths`. All cross-directory imports use it (`@/components/...`, `@/data/memories`); keep using it for new imports.
 - Timeline + gallery content lives in `src/data/memories.js`. Other copy is hardcoded inside components (`LoveLetter.jsx`, `Surprise.jsx`, `Footer.jsx`).
 - Tailwind v4 is CSS-first: `postcss.config.mjs` loads `@tailwindcss/postcss`, `globals.css` has `@import "tailwindcss"` and **no `tailwind.config.*` file exists**. Custom classes (`.font-romantic`, `.floating`, keyframes) are plain CSS in `globals.css` — add new theme/utilities there, not in a JS config.
-- `next.config.mjs` is empty. Using `next/image` with remote URLs requires adding `images.remotePatterns` first; local assets are expected.
+- `next.config.mjs` is not empty: it sets `images.dangerouslyAllowSVG` + a sandboxing CSP (leftover from the SVG starter art; harmless — keep it unless you're sure no SVG goes through `next/image`). `Hero.jsx` and `Gallery.jsx` use `next/image` with local assets; remote URLs would additionally need `images.remotePatterns`.
 
 ## Gotchas
 
-- **Photos and music are the user's personal files.** `public/images/` holds `memory_1.jpeg` / `memory_2.jpeg` / `memory_3.jpg` / `memory_4.jpg` (referenced from `src/data/memories.js` and `src/components/Hero.jsx`) plus unused `*.svg` starter artwork; `public/music/our_music.mp3` (~10 MB) is wired into `MusicPlayer.jsx`. The `ADD_YOUR_SONG_HERE.txt` note and the `*.svg` files are leftovers — no code references them. Changing a filename means updating the `src` path too.
+- **Photos and music are the user's personal files.** `public/images/` holds `memory_1.jpeg` … `memory_5.jpeg` (all `.jpeg`); `memory_1`–`memory_4` are referenced from `src/data/memories.js` and `src/components/Hero.jsx`, while `memory_5.jpeg` is currently unreferenced. The `memory-1.svg`–`memory-4.svg` and `hero.svg` starter artwork and `public/music/ADD_YOUR_SONG_HERE.txt` are leftovers — no code references them. `public/music/our_music.mp3` (~10 MB) is wired into `MusicPlayer.jsx`. Changing a filename means updating the `src` path too.
 - No database, auth, or env vars; `.env*` is gitignored and unused.
 - ESLint ignores `.next/`, `out/`, `build/`, `next-env.d.ts` (see `eslint.config.mjs`).
 
